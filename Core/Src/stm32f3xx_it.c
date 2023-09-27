@@ -22,6 +22,7 @@
 #include "stm32f3xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "usart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -197,6 +198,37 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32f3xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles USART2 global interrupt / USART2 wake-up interrupt through EXTI line 26.
+  */
+void USART2_IRQHandler(void)
+{
+  static uint8_t buf[256];
+  static uint8_t count = 0;
+  /* USER CODE BEGIN USART2_IRQn 0 */
+  if(LL_USART_IsActiveFlag_ORE(USART2)) {
+      LL_USART_ReceiveData8(USART2);
+      count = 0;
+      LL_USART_DisableIT_RXNE(USART2);
+      LL_USART_ClearFlag_ORE(USART2);
+      LL_USART_ClearFlag_NE(USART2);
+      MX_USART2_UART_Init();
+  } else if(LL_USART_IsActiveFlag_PE(USART2)) {
+      LL_USART_ReceiveData8(USART2);
+      count = 0;
+  } else if(LL_USART_IsActiveFlag_FE(USART2)) {
+      LL_USART_ReceiveData8(USART2);
+      count = 0;
+  } else if(LL_USART_IsActiveFlag_RXNE(USART2)) {
+      buf[count++] = LL_USART_ReceiveData8(USART2);
+      if(8 <= count) LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_11);
+  }
+  /* USER CODE END USART2_IRQn 0 */
+  /* USER CODE BEGIN USART2_IRQn 1 */
+
+  /* USER CODE END USART2_IRQn 1 */
+}
 
 /* USER CODE BEGIN 1 */
 
