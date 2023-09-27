@@ -204,9 +204,9 @@ void SysTick_Handler(void)
   */
 void USART2_IRQHandler(void)
 {
+  /* USER CODE BEGIN USART2_IRQn 0 */
   static uint8_t buf[256];
   static uint8_t count = 0;
-  /* USER CODE BEGIN USART2_IRQn 0 */
   if(LL_USART_IsActiveFlag_ORE(USART2)) {
       LL_USART_ReceiveData8(USART2);
       count = 0;
